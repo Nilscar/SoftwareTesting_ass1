@@ -29,13 +29,13 @@ def login() -> dict[str, str | float] | None:
 
     # TODO: Task 1: prompt user to register when not found
     # Prompt user to register when not found
-    UserInterface.display_message("Username not found.")
+    print("Username not found.")
     register_choice = UserInterface.get_user_input(prompt="Would you like to register? (yes/no): ").strip().lower()
     if register_choice == "yes":
         while True:
             new_password: str = UserInterface.get_user_input(prompt="Enter a password for registration: ").strip()
-            UserAuthenticator.register(username=username, password=new_password, data=users_data)
+            UserAuthenticator.register(username=username, password=new_password, data=UserDataManager.load_users())
             return None
     else:
-        UserInterface.display_message("Registration skipped.")
+        print("Registration skipped.")
     return None
