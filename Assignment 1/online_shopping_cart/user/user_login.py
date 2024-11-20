@@ -28,5 +28,14 @@ def login() -> dict[str, str | float] | None:
         return is_authentic_user
 
     # TODO: Task 1: prompt user to register when not found
-
+    # Prompt user to register when not found
+    UserInterface.display_message("Username not found.")
+    register_choice = UserInterface.get_user_input(prompt="Would you like to register? (yes/no): ").strip().lower()
+    if register_choice == "yes":
+        while True:
+            new_password: str = UserInterface.get_user_input(prompt="Enter a password for registration: ").strip()
+            UserAuthenticator.register(username=username, password=new_password, data=users_data)
+            return None
+    else:
+        UserInterface.display_message("Registration skipped.")
     return None
