@@ -7,7 +7,7 @@ import json
 
 class UserDataManager:
 
-    USER_FILE_PATHNAME: str = './files/users.json'
+    USER_FILE_PATHNAME: str = '../../files/users.json'
 
     @staticmethod
     def load_users() -> list[dict[str, str | float]]:
@@ -22,3 +22,21 @@ class UserDataManager:
     def save_users(data: list[dict[str, str | float]]) -> None:
         with open(file=UserDataManager.USER_FILE_PATHNAME, mode='w') as file:
             json.dump(obj=data, fp=file, indent=2)
+            
+    @staticmethod
+    def update_wallet(username,new_value):
+        with open(file=UserDataManager.USER_FILE_PATHNAME,mode='r') as file:
+            data = json.load(fp=file)
+            user = {}
+            for x in data:
+                if x["username"] == username:
+                    user = x
+                    break
+            user["wallet"] = new_value
+        
+        with open(file=UserDataManager.USER_FILE_PATHNAME,mode='w') as file:
+            json.dump(data,file,indent=2)
+        
+        
+        
+            
