@@ -9,7 +9,6 @@ from online_shopping_cart.user.user_data import UserDataManager
 def is_quit(input_argument: str) -> bool:
     return input_argument.lower() == 'q'
 
-
 def login() -> dict[str, str | float] | None:
     username: str = UserInterface.get_user_input(prompt="Enter your username (or 'q' to quit): ")
     if is_quit(input_argument=username):
