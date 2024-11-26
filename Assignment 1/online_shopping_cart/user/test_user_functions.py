@@ -90,3 +90,4 @@ def test_register_edge_case_username(mock_user_data):
             mock_save.assert_called_once()
 
     assert {"username": "New_User!@#", "password": "EdgePass@123", "wallet": 0.0} in new_user_data
+

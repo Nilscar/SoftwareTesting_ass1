@@ -58,13 +58,12 @@ class UserAuthenticator:
         if not PasswordValidator.is_valid(password):
             print("Registration failed due to invalid password.")
             return
-
         # Add new user
         new_user = {
             "username": username,
             "password": password,
             "wallet": 0.0
         }
-        data.append(new_user)  # Append new user to the in-memory data
-        UserDataManager.save_users(data)  # Save updated data to the JSON file
+        data.append(new_user)
+        UserDataManager.save_users(data)
         print(f"User '{username}' successfully registered.")
