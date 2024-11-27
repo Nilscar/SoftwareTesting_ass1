@@ -39,6 +39,8 @@ def test_invalid_password_empty():
 def test_invalid_password_empty_space():
     assert PasswordValidator.is_valid(" ") is False
 
+def test_invalid_password_empty_spaces():
+    assert PasswordValidator.is_valid("          ") is False
 
 #############################
 # USER LOGIN TESTS
@@ -55,6 +57,17 @@ def test_login_failure_wrong_password(mock_user_data):
         result = UserAuthenticator.login("testuser", "WrongPass!", mock_user_data)
         assert result is None
 
+
+def test_login_failure_no_password(mock_user_data):
+    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
+        result = UserAuthenticator.login("testuser", "", mock_user_data)
+        assert result is None
+
+
+def test_login_failure_no_user_no_password(mock_user_data):
+    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
+        result = UserAuthenticator.login("", "", mock_user_data)
+        assert result is None
 
 #############################
 # USER REGISTER TESTS
