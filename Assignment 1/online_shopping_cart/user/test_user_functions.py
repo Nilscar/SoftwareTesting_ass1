@@ -77,10 +77,10 @@ def test_register_valid_new_user(mock_user_data):
 
     with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
         with patch.object(UserDataManager, 'save_users') as mock_save:
-            UserAuthenticator.register("newuser", "NewPass123!", new_user_data)
+            UserAuthenticator.register("newuser", "ValidPass123!", new_user_data)
             mock_save.assert_called_once()  # Ensures save_users was called once as it should
 
-    assert {"username": "newuser", "password": "NewPass123!", "wallet": 0.0} in new_user_data
+    assert {"username": "newuser", "password": "ValidPass123!", "wallet": 0.0} in new_user_data
 
 
 def test_register_existing_user(mock_user_data):
@@ -99,22 +99,41 @@ def test_register_invalid_password(mock_user_data):
 
     with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
         with patch.object(UserDataManager, 'save_users') as mock_save:
-            UserAuthenticator.register("invalnewuser", "short", new_user_data)
+            UserAuthenticator.register("newuser", "short", new_user_data)
             mock_save.assert_not_called()
 
-    assert {"username": "invalnewuser", "password": "short", "wallet": 0.0} not in new_user_data
+    assert {"username": "newuser", "password": "short", "wallet": 0.0} not in new_user_data
 
 
-def test_register_edge_case_username(mock_user_data):
+def test_register_invalid_input_username(mock_user_data):
     new_user_data = mock_user_data.copy()
 
     with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
         with patch.object(UserDataManager, 'save_users') as mock_save:
-            UserAuthenticator.register("New_User!@#", "EdgePass@123", new_user_data)
-            mock_save.assert_called_once()
+            UserAuthenticator.register(12345, "ValidPass123!", new_user_data)
+            mock_save.assert_not_called()
 
-    assert {"username": "New_User!@#", "password": "EdgePass@123", "wallet": 0.0} in new_user_data
+    assert {"username": 12345, "password": "ValidPass123!", "wallet": 0.0} in new_user_data
 
+def test_register_invalid_input_password(mock_user_data):
+    new_user_data = mock_user_data.copy()
+
+    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
+        with patch.object(UserDataManager, 'save_users') as mock_save:
+            UserAuthenticator.register("newuser", 12345, new_user_data)
+            mock_save.assert_not_called()
+
+    assert {"username": "newuser", "password": 12345, "wallet": 0.0} in new_user_data
+
+def test_register_invalid_input_data(mock_user_data):
+    new_user_data = mock_user_data.copy()
+
+    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
+        with patch.object(UserDataManager, 'save_users') as mock_save:
+            UserAuthenticator.register("newuser", "ValidPass123!", 12345)
+            mock_save.assert_not_called()
+
+    assert {"username": "newuser", "password": "ValidPass123!", "wallet": 0.0} in new_user_data
 
 #############################
 # USER LOGOUT TESTS
