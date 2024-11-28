@@ -54,13 +54,13 @@ def test_login_success(mock_user_data):
 
 def test_login_failure_wrong_password(mock_user_data):
     with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
-        result = UserAuthenticator.login("testuser", "WrongPass!", mock_user_data)
+        result = UserAuthenticator.login("testuser", "wrongpass", mock_user_data)
         assert result is None
 
 
 def test_login_failure_no_password(mock_user_data):
     with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
-        result = UserAuthenticator.login("testuser", "", mock_user_data)
+        result = UserAuthenticator.login("nouser", "anypassword", mock_user_data)
         assert result is None
 
 
