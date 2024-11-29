@@ -51,6 +51,7 @@ def check_cart(user, cart) -> None | bool:
     Print the cart and prompt user for proceeding to checkout
     """
     global global_products
+    
 
     display_cart_items(cart)
 
@@ -102,19 +103,29 @@ def checkout_and_payment(login_info) -> None:
         wallet=login_info['wallet']
     )
 
-    # Get user input for either selecting a product by its number, checking their cart or logging out
+    # Get user input for either selecting a product by its number, checking their cart, or logging out
     while True:
         choice: str = UserInterface.get_user_input(
             prompt='\nEnter product number or (d to display products, c to check cart, l to logout): '
         ).lower()
+        
         if choice.startswith('d'):
             display_products_available_for_purchase()
         elif choice.startswith('c'):
-            if check_cart(user=user, cart=global_cart) is False:
-                continue  # The user has selected not to check out their cart
-            else:    
-              # TODO: Task 4: update the wallet information in the users.json file
-              UserDataManager.update_wallet(user.name,global_cart.get_total_price())
+            wallet_before = user.wallet
+            
+            cart_checked_out = check_cart(user=user, cart=global_cart)
+            
+            if wallet_before > user.wallet:
+                UserDataManager.update_wallet(user.name, user.wallet)
+                
+            
+            if cart_checked_out is False:
+                continue  # User decided not to check out
+            elif cart_checked_out is None:
+                # Cart is empty or the checkout process ended without a purchase
+                continue  
+           
         elif choice.startswith('l'):
             if logout(cart=global_cart):
                 exit(0)  # The user has logged out
