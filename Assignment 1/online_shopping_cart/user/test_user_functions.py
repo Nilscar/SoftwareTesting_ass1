@@ -1,6 +1,9 @@
 # test_user_functions.py
+import builtins
+
 import pytest
 from unittest.mock import patch, MagicMock
+from online_shopping_cart.user.user_login import login
 from online_shopping_cart.user.user_authentication import UserAuthenticator, PasswordValidator
 from online_shopping_cart.user.user_data import UserDataManager
 from online_shopping_cart.user.user_interface import UserInterface
@@ -48,28 +51,56 @@ def test_invalid_input_list():
 #############################
 # USER LOGIN TESTS
 #############################
-def test_login_success(mock_user_data):
-    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
-        result = UserAuthenticator.login("testuser", "Valid123!", mock_user_data)
-        assert result is not None
-        assert result["username"] == "testuser"
+def test_user_login_success(mock_user_data):
+
+    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data), \
+    patch.object(UserInterface, 'get_user_input', side_effect=["testuser", "Valid123!"]):
+        with patch.object(UserAuthenticator, 'login') as login_called:
+            login()
+            login_called.assert_called_once_with(username="testuser", password="Valid123!", data=mock_user_data)
+        with patch("builtins.print") as mock_print:
+            result = UserAuthenticator.login("testuser", "Valid123!", mock_user_data)
+            assert result is not None
+            mock_print.assert_called_with('Successfully logged in.')
+            assert result["username"] == "testuser"
 
 
-def test_login_failure_wrong_password(mock_user_data):
-    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
-        result = UserAuthenticator.login("testuser", "wrongpass", mock_user_data)
-        assert result is None
+def test_user_login_failure_wrong_password(mock_user_data):
+
+    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data), \
+    patch.object(UserInterface, 'get_user_input', side_effect=["testuser", "wrongpass"]):
+        with patch.object(UserAuthenticator, 'login') as login_called:
+            login()
+            login_called.assert_called_once_with(username="testuser", password="wrongpass", data=mock_user_data)
+        with patch("builtins.print") as mock_print:
+            result = UserAuthenticator.login("testuser", "wrongpass", mock_user_data)
+            assert result is None
+            mock_print.assert_called_with('Login failed.')
 
 
-def test_login_failure_no_password(mock_user_data):
-    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
-        result = UserAuthenticator.login("nouser", "anypassword", mock_user_data)
-        assert result is None
+def test_user_login_failure_non_existent_user(mock_user_data):
+
+    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data), \
+    patch.object(UserInterface, 'get_user_input', side_effect=["nouser", "anypassword"]):
+        with patch.object(UserAuthenticator, 'login') as login_called, \
+        patch("builtins.input") as mock_input:
+            login()
+            login_called.assert_called_once_with(username="nouser", password="anypassword", data=mock_user_data)
+            #mock_input.assert_any_call("Would you like to register? (yes/no): ")
+        with patch("builtins.print") as mock_print:
+            result = UserAuthenticator.login("nouser", "anypassword", mock_user_data)
+            assert result is None
+            mock_print.assert_called_with('User is not registered.')
 
 
 def test_login_failure_no_user_no_password(mock_user_data):
     with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
         result = UserAuthenticator.login("", "", mock_user_data)
+        assert result is None
+
+def test_login_failure_invalid_input_integer(mock_user_data):
+    with patch.object(UserDataManager, 'load_users', return_value=mock_user_data):
+        result = UserAuthenticator.login(1234, "", mock_user_data)
         assert result is None
 
 #############################
