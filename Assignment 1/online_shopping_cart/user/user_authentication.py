@@ -9,6 +9,8 @@ class PasswordValidator:
     @staticmethod
     def is_valid(password) -> bool:
         # TODO: Task 1: validate password for registration
+        if password is not str:
+            return False
         if len(password) < 8:
             print("Password must be at least 8 characters long.")
             return False

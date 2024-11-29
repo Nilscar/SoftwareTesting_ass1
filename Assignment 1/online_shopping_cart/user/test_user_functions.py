@@ -36,11 +36,14 @@ def test_invalid_password_too_short():
 def test_invalid_password_empty():
     assert PasswordValidator.is_valid("") is False
 
-def test_invalid_password_empty_space():
-    assert PasswordValidator.is_valid(" ") is False
+def test_invalid_input_integer():
+    assert PasswordValidator.is_valid(12345678) is False
 
-def test_invalid_password_empty_spaces():
-    assert PasswordValidator.is_valid("          ") is False
+def test_invalid_input_float():
+    assert PasswordValidator.is_valid(1234567.8) is False
+
+def test_invalid_input_list():
+    assert PasswordValidator.is_valid(["V","a","l","i","p","a","s","s","1","!"]) is False
 
 #############################
 # USER LOGIN TESTS
