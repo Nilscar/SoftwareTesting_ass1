@@ -100,11 +100,10 @@ def test_checkout_with_invalid_list_input():
 
 def test_display_products(mock_products, mock_user_input, mock_print):
     mock_user_input.side_effect= ["d","l","y"]
-    try:
-        checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
     
+    with pytest.raises(SystemExit):
+        checkout_and_payment(login_info_full_wallet)
+  
     mock_print.assert_any_call('\nAvailable products for purchase:')
     mock_print.assert_any_call('1. Product 1 - $25 - Units: 5')
     mock_print.assert_any_call('2. Product 2 - $20 - Units: 3')
@@ -114,10 +113,8 @@ def test_display_products(mock_products, mock_user_input, mock_print):
 def test_empty_cart(mock_cart_empty, mock_products, mock_user_input, mock_print, mock_update_wallet):
     mock_user_input.side_effect = ["c", "l", "y"]
 
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
 
     mock_print.assert_any_call("\nItems in the cart:")
     mock_update_wallet.assert_not_called()
@@ -127,10 +124,8 @@ def test_empty_cart(mock_cart_empty, mock_products, mock_user_input, mock_print,
 def test_log_out(mock_cart_empty, mock_products, mock_user_input, mock_print, mock_update_wallet):
     mock_user_input.side_effect = ['l','y']
     
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
     
     mock_print.assert_any_call("You have been logged out.")
     mock_update_wallet.assert_not_called()
@@ -139,10 +134,8 @@ def test_log_out(mock_cart_empty, mock_products, mock_user_input, mock_print, mo
 def test_add_out_of_stock_product(mock_products, mock_user_input, mock_print):
     mock_user_input.side_effect = ["4", "l", "y"]  
 
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
 
     mock_print.assert_any_call("Sorry, Product 4 is out of stock.")
     mock_print.assert_any_call("You have been logged out.")
@@ -150,22 +143,18 @@ def test_add_out_of_stock_product(mock_products, mock_user_input, mock_print):
 def test_add_non_existent_product(mock_products, mock_user_input, mock_print):
     mock_user_input.side_effect = ["38", "l", "y"]  
 
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
+
 
     mock_print.assert_any_call("Invalid input. Please try again.")
     mock_print.assert_any_call("You have been logged out.")
 
 def test_insufficient_funds(mock_cart_with_items, mock_products, mock_user_input, mock_print):
     mock_user_input.side_effect = ["c", "y", "l", "y"]
-
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_low_wallet)
-    except SystemExit:
-        pass
-
+   
     mock_print.assert_any_call("You don't have enough money to complete the purchase. Please try again!")
     
     assert not mock_cart_with_items.is_empty()
@@ -179,10 +168,8 @@ def test_checkout_exceeding_funds_by_very_small_amount(mock_cart_empty, mock_pro
 
     mock_user_input.side_effect = ["c", "y", "l", "y"]
 
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_decimal_wallet)
-    except SystemExit:
-        pass
 
     mock_print.assert_any_call("You don't have enough money to complete the purchase. Please try again!")
     assert not mock_cart_empty.is_empty()
@@ -210,10 +197,10 @@ def test_invalid_remove(mock_products, mock_user_input, mock_cart_with_items, mo
     mock_user_input.side_effect = ['c', 'n', 'y', '4', 'c', 'n', 'l', 'y']
 
     assert len(mock_cart_with_items.items) == 2
-    try:
+    
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
+   
     
     assert len(mock_cart_with_items.items) == 2
     mock_print.assert_any_call('Invalid input. Please try again.')
@@ -221,10 +208,8 @@ def test_invalid_remove(mock_products, mock_user_input, mock_cart_with_items, mo
 def test_remove(mock_products, mock_user_input, mock_cart_with_items, mock_print):
     mock_user_input.side_effect = ['c', 'n', 'y', '1', 'l', 'y']
     assert len(mock_cart_with_items.items) == 2
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
     
     assert len(mock_cart_with_items.items) == 1
     remaining_item_names = [item.name for item in mock_cart_with_items.items]
@@ -233,21 +218,17 @@ def test_remove(mock_products, mock_user_input, mock_cart_with_items, mock_print
 def test_checkout_after_cancel(mock_cart_with_items, mock_products, mock_user_input, mock_print, mock_update_wallet):
     mock_user_input.side_effect = ["c", "n", "n", "c", "y", "l", "y"]
 
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
-
+        
     mock_print.assert_any_call("Thank you for your purchase, user! Your remaining balance is 50")
     assert mock_cart_with_items.is_empty()
 
 def test_successful_checkout(mock_cart_with_items, mock_products, mock_user_input, mock_print, mock_update_wallet):
     mock_user_input.side_effect = ["c", "y", "l", "y"]
 
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
    
     mock_print.assert_any_call('Thank you for your purchase, user! Your remaining balance is 50')
     mock_update_wallet.assert_called_once_with("user", 50.0)
@@ -258,10 +239,9 @@ def test_successful_checkout(mock_cart_with_items, mock_products, mock_user_inpu
 def test_checkout_with_decimal_wallet(mock_cart_with_items, mock_products, mock_user_input, mock_print, mock_update_wallet):
     mock_user_input.side_effect = ["c", "y", "l", "y"]
     logger = logging.getLogger("logger")
-    try:
+    
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_decimal_wallet)
-    except SystemExit:
-        pass
     
     logger.debug("Logging all print calls:")
     for call in mock_print.call_args_list:
@@ -277,10 +257,8 @@ def test_checkout_very_expensive(mock_cart_empty, mock_products, mock_user_input
 
     mock_user_input.side_effect = ["c", "y", "l", "y"]
 
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_rich_user)
-    except SystemExit:
-        pass
 
     mock_print.assert_any_call("Thank you for your purchase, user! Your remaining balance is " + str(10**52 - 10**50))
     mock_update_wallet.assert_called_once_with("user", 10**52 - 10**50)
@@ -291,10 +269,8 @@ def test_checkout_very_large_quantity(mock_cart_empty, mock_products, mock_user_
 
     mock_user_input.side_effect = ["c", "y", "l", "y"]
 
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_rich_user)
-    except SystemExit:
-        pass
 
     mock_print.assert_any_call("Thank you for your purchase, user! Your remaining balance is " + str(10**52 - 10**50))
     mock_update_wallet.assert_called_once_with("user", 10**52 - 10**50)
@@ -304,11 +280,9 @@ def test_add_item_checkout(mock_cart_with_items, mock_products, mock_user_input,
     mock_user_input.side_effect = ["1", "c", "y", "l", "y"]
     assert len(cart.items) == 2
     
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
-    
+        
     mock_print.assert_any_call('Product 1 added to your cart.')
     mock_print.assert_any_call('1. Product 1 - $25 - Units: 2')  ## was 1 unit before add
     mock_print.assert_any_call('Thank you for your purchase, user! Your remaining balance is 25')
@@ -323,10 +297,8 @@ def test_multiple_items_checkout_even_zero_checkout(mock_cart_with_items, mock_p
     mock_user_input.side_effect = ["1", "2", "c", "y", "l", "y"]
     assert len(cart.items) == 2
     
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_full_wallet)
-    except SystemExit:
-        pass
     
     mock_print.assert_any_call('Product 1 added to your cart.')
     mock_print.assert_any_call('Product 2 added to your cart.')
@@ -340,10 +312,8 @@ def test_multiple_items_checkout_even_zero_checkout(mock_cart_with_items, mock_p
 def test_negative_wallet_checkout(mock_cart_with_items, mock_products, mock_user_input, mock_print, mock_update_wallet):
     mock_user_input.side_effect = ["c", "y", "l", "y"]
 
-    try:
+    with pytest.raises(SystemExit):
         checkout_and_payment(login_info_negative_wallet)
-    except SystemExit:
-        pass
     
     assert not mock_cart_with_items.is_empty()
     assert mock_cart_with_items.get_total_price() == 50
