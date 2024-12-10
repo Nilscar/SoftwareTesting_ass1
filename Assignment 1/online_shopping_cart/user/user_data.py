@@ -7,7 +7,7 @@ import json
 
 class UserDataManager:
 
-    USER_FILE_PATHNAME: str = '../../files/users.json'
+    USER_FILE_PATHNAME: str = './files/users.json'
 
     @staticmethod
     def load_users() -> list[dict[str, str | float]]:
