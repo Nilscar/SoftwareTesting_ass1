@@ -1,0 +1,10 @@
+# macOS system files
+.DS_Store
+
+# IntelliJ IDEA project files
+.idea/
+*.iml
+
+# Other system or IDE-specific files
+*.log
+*.tmp
