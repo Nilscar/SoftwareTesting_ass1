@@ -9,6 +9,8 @@ class PasswordValidator:
     @staticmethod
     def is_valid(password) -> bool:
         # TODO: Task 1: validate password for registration
+        if password is not str:
+            return False
         if len(password) < 8:
             print("Password must be at least 8 characters long.")
             return False
@@ -58,13 +60,12 @@ class UserAuthenticator:
         if not PasswordValidator.is_valid(password):
             print("Registration failed due to invalid password.")
             return
-
         # Add new user
         new_user = {
             "username": username,
             "password": password,
             "wallet": 0.0
         }
-        data.append(new_user)  # Append new user to the in-memory data
-        UserDataManager.save_users(data)  # Save updated data to the JSON file
+        data.append(new_user)
+        UserDataManager.save_users(data)
         print(f"User '{username}' successfully registered.")
