@@ -8,3 +8,6 @@
 # Other system or IDE-specific files
 *.log
 *.tmp
+
+#virtual environment
+venv/
